@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<config>
+	<sections>
+		<payment>
+			<groups>
+				<cardlink_checkout translate="label comment" module="cardlink_checkout">
+					<label>Cardlink Payment Gateway CheckOut</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>10</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+
+					<fields>
+
+						<active translate="label">
+							<label>Enabled</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>10</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</active>
+
+						<order_status translate="label">
+							<label>New Order Status</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_order_status</source_model>
+							<sort_order>11</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</order_status>
+
+						<allowspecific translate="label">
+							<label>Payment Applicable From</label>
+							<frontend_type>select</frontend_type>
+							<sort_order>12</sort_order>
+							<source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</allowspecific>
+
+						<specificcountry translate="label">
+							<label>Countries Payment Applicable From</label>
+							<frontend_type>multiselect</frontend_type>
+							<sort_order>13</sort_order>
+							<source_model>adminhtml/system_config_source_country</source_model>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<depends>
+								<allowspecific>1</allowspecific>
+							</depends>
+						</specificcountry>
+
+						<sort_order translate="label">
+							<label>Sort Order</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>14</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>required-entry validate-not-negative-number</validate>
+						</sort_order>
+
+						<title translate="label comment">
+							<label>Title</label>
+							<comment>The title of the payment method to be displayed during the checkout.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>required-entry</validate>
+						</title>
+
+						<description translate="label comment">
+							<label>Description</label>
+							<comment>A short description of the payment method to be displayed during the checkout.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>21</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</description>
+
+						<business_partner translate="label comment">
+							<label>Business Partner</label>
+							<comment>Identify the business partner that will handle payment transactions as agreed with Cardlink.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>cardlink_checkout/system_config_source_businessPartners</source_model>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</business_partner>
+
+						<merchant_id translate="label comment">
+							<label>Merchant ID</label>
+							<comment>The merchant ID provided by Cardlink.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>31</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>required-entry</validate>
+						</merchant_id>
+
+						<shared_secret translate="label comment">
+							<label>Shared Secret</label>
+							<comment>The shared secret code provided by Cardlink.</comment>
+							<frontend_type>password</frontend_type>
+							<sort_order>32</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>required-entry</validate>
+						</shared_secret>
+
+						<transaction_environment translate="label comment">
+							<label>Transactions Environment</label>
+							<comment>Identify the working environment for payment transactions.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>cardlink_checkout/system_config_source_transactionEnvironments</source_model>
+							<sort_order>33</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</transaction_environment>
+
+						<transaction_type translate="label comment">
+							<label>Payment Action</label>
+							<comment>Identify the type of transaction to perform. By selecting the 'Authorize' option, you will need to manually capture the order amount on Cardlink's merchant dashboard.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>cardlink_checkout/system_config_source_transactionTypes</source_model>
+							<sort_order>34</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</transaction_type>
+
+						<accept_installments translate="label comment">
+							<label>Accept Installments</label>
+							<comment>Enable installment payments and define the maximum number of Installments.</comment>
+							<frontend_type>select</frontend_type>
+							<!--<source_model>adminhtml/system_config_source_yesno</source_model>-->
+							<source_model>cardlink_checkout/system_config_source_acceptInstallments</source_model>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</accept_installments>
+
+						<max_installments translate="label comment">
+							<label>Maximum Installments</label>
+							<comment>The maximum number of installments available for all orders.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>41</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>required-entry validate-greater-than-zero</validate>
+							<depends>
+								<accept_installments>fixed</accept_installments>
+							</depends>
+						</max_installments>
+
+						<installments_configuration translate="label comment">
+							<label>Order Amount Based Installments</label>
+							<comment>Set the amount ranges to limit the maximum allowed number of installments.</comment>
+							<sort_order>42</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<!-- Specific backend class to handle serialized data -->
+							<backend_model>adminhtml/system_config_backend_serialized_array</backend_model>
+							<!-- Specific frontend class to render custom field -->
+							<frontend_model>cardlink_checkout/adminhtml_system_config_form_field_installments</frontend_model>
+							<depends>
+								<accept_installments>order_amount</accept_installments>
+							</depends>
+						</installments_configuration>
+
+						<allow_tokenization translate="label comment">
+							<label>Allow Tokenization</label>
+							<comment>Enable customers to select whether they want to secure store their payment cards for future checkouts.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>50</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</allow_tokenization>
+
+						<checkout_in_iframe translate="label comment">
+							<label>Checkout without Leaving Your Store</label>
+							<comment>Perform the payment flow without having the customers leave your website for Cardlink's payment gateway. You will need to have a valid SSL certificate properly configured on your domain.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>90</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</checkout_in_iframe>
+
+						<force_store_language translate="label comment">
+							<label>Force Store Language on Cardlink's Payment Gateway</label>
+							<comment>Instruct Cardlink's Payment Gateway to use the language of the store that the order gets placed.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>91</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</force_store_language>
+
+						<display_payment_method_logo translate="label comment">
+							<label>Display Cardlink Logo</label>
+							<comment>Display the Cardlink logo next to the payment method title.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>92</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</display_payment_method_logo>
+
+						<payment_gateway_css_url translate="label comment">
+							<label>CSS URL</label>
+							<comment>Full URL of custom CSS stylesheet, to be used to display payment page styles.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>93</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>validate-url</validate>
+						</payment_gateway_css_url>
+
+						<log_debug_info translate="label comment">
+							<label>Log Debug Information</label>
+							<comment>Store debug log information in file cardlink.log. Use only for a limited time frame and delete the log file afterwards.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>94</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</log_debug_info>
+
+					</fields>
+				</cardlink_checkout>
+			</groups>
+		</payment>
+
+	</sections>
+</config>

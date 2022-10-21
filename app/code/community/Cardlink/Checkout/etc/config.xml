@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<modules>
+		<Cardlink_Checkout>
+			<version>1.0.1</version>
+			<version_comments></version_comments>
+		</Cardlink_Checkout>
+	</modules>
+
+	<global>
+		<fieldsets>
+			<sales_convert_quote_payment>
+				<cardlink_stored_token>
+					<to_order_payment>*</to_order_payment>
+				</cardlink_stored_token>
+				<cardlink_tokenize>
+					<to_order_payment>*</to_order_payment>
+				</cardlink_tokenize>
+				<cardlink_installments>
+					<to_order_payment>*</to_order_payment>
+				</cardlink_installments>
+			</sales_convert_quote_payment>
+			<sales_convert_order_payment>
+				<cardlink_stored_token>
+					<to_quote_payment>*</to_quote_payment>
+				</cardlink_stored_token>
+				<cardlink_tokenize>
+					<to_quote_payment>*</to_quote_payment>
+				</cardlink_tokenize>
+				<cardlink_installments>
+					<to_quote_payment>*</to_quote_payment>
+				</cardlink_installments>
+			</sales_convert_order_payment>
+		</fieldsets>
+		<models>
+			<cardlink_checkout>
+				<class>Cardlink_Checkout_Model</class>
+			</cardlink_checkout>
+		</models>
+		<helpers>
+			<cardlink_checkout>
+				<class>Cardlink_Checkout_Helper</class>
+			</cardlink_checkout>
+		</helpers>
+		<blocks>
+			<cardlink_checkout>
+				<class>Cardlink_Checkout_Block</class>
+			</cardlink_checkout>
+		</blocks>
+		<resources>
+			<cardlink_checkout_setup>
+				<setup>
+					<module>Cardlink_Checkout</module>
+				</setup>
+			</cardlink_checkout_setup>
+		</resources>
+	</global>
+
+	<crontab>
+		<jobs>
+			<Cardlink_Checkout>
+				<schedule>
+					<cron_expr>0 */8 * * *</cron_expr>
+				</schedule>
+				<run>
+					<model>cardlink_checkout/observer::checkVersionUpdate</model>
+				</run>
+			</Cardlink_Checkout>
+		</jobs>
+	</crontab>
+
+	<!-- For Admin Controller-->
+	<adminhtml>
+		<translate>
+			<modules>
+				<Cardlink_Checkout>
+					<files>
+						<default>Cardlink_Checkout.csv</default>
+					</files>
+				</Cardlink_Checkout>
+			</modules>
+		</translate>
+	</adminhtml>
+
+	<!-- For Frontend Controller-->
+	<frontend>
+		<routers>
+			<cardlink_checkout>
+				<use>standard</use>
+				<args>
+					<module>Cardlink_Checkout</module>
+					<frontName>cardlink_checkout</frontName>
+				</args>
+			</cardlink_checkout>
+		</routers>
+		<layout>
+			<updates>
+				<cardlink_checkout>
+					<file>cardlink_checkout.xml</file>
+				</cardlink_checkout>
+			</updates>
+		</layout>
+		<translate>
+			<modules>
+				<Cardlink_Checkout>
+					<files>
+						<default>Cardlink_Checkout.csv</default>
+					</files>
+				</Cardlink_Checkout>
+			</modules>
+		</translate>
+	</frontend>
+
+	<default>
+		<payment>
+			<cardlink_checkout>
+				<model>cardlink_checkout/payment</model>
+				<active>1</active>
+				<order_status>pending</order_status>
+				<allowspecific>0</allowspecific>
+				<sort_order>0</sort_order>
+				<!-- Start of: Default configuration values -->
+				<title>Pay through Cardlink</title>
+				<display_payment_method_logo>1</display_payment_method_logo>
+				<description>Pay Via Cardlink: Accepts Visa, Mastercard, Maestro, American Express, Diners, Discover.</description>
+				<merchant_id></merchant_id>
+				<shared_secret></shared_secret>
+				<business_partner>cardlink</business_partner>
+				<payment_action>capture</payment_action>
+				<accept_installments>0</accept_installments>
+				<max_installments>12</max_installments>
+				<allow_tokenization>0</allow_tokenization>
+				<force_store_language>1</force_store_language>
+				<log_debug_info>0</log_debug_info>
+				<!-- End of: Default configuration values -->
+			</cardlink_checkout>
+		</payment>
+	</default>
+
+</config>

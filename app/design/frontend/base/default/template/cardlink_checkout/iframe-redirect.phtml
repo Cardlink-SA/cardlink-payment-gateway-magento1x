@@ -1,0 +1,35 @@
+<?php
+
+$title = $this->__('Redirecting back to the store...');
+$orderId = $this->getOrderId();
+$message = $this->getMessage();
+$redirectUrl = $this->getRedirectUrl();
+
+?>
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title><?php echo $title; ?></title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" type="text/css" href="<?php echo $this->getSkinUrl('css/cardlink-checkout.css'); ?>" media="all" />
+</head>
+
+<body class="cardlink_checkout--redirect-page">
+    <div class="page-title">
+        <h1><?php echo $title; ?></h1>
+    </div>
+
+    <form name="cardlink_checkout" method="get" target="_top" action="<?php echo $redirectUrl; ?>">
+        <input type="hidden" name="orderId" value="<?php echo $orderId; ?>" />
+        <input type="hidden" name="message" value="<?php echo $message; ?>" />
+    </form>
+    <script>
+        window.addEventListener('load', function() {
+            document.forms["cardlink_checkout"].submit();
+        })
+    </script>
+</body>
+
+</html>

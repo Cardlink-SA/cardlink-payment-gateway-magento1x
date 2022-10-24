@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Enumeration class for the payment gateway's transaction status response.
+ * Observer class to execute a module version update check.
  * 
  * @author Cardlink S.A.
  */
@@ -28,7 +28,6 @@ class Cardlink_Checkout_Model_Observer
                     Cardlink_Checkout_Helper_Version::VERSION_DOWNLOAD_URL,
                     false
                 );
-
                 $versionHelper->setLastSeenVersion($publishedVersionData['version']);
             }
         }

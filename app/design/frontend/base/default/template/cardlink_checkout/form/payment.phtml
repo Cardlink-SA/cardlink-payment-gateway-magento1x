@@ -48,18 +48,18 @@ $enabledStoredTokens = 0;
 </script>
 
 <div class="form-list" id="payment_form_<?php echo $this->getMethodCode(); ?>" style="display:none;">
-  <p class="required">* <?php echo Mage::helper('checkout')->__('Required Fields'); ?></p>
-
   <?php
   $description = $this->__(Mage::helper('cardlink_checkout')->getDescription());
-
   if (!empty($description)) :
   ?>
     <div>
       <?php echo $description; ?>
     </div>
     <br />
-  <?php endif;   ?>
+  <?php endif; ?>
+
+  <p class="required">* <?php echo Mage::helper('checkout')->__('Required Fields'); ?></p>
+  <br />
 
   <?php if (Mage::helper('cardlink_checkout')->acceptsInstallments()) : ?>
     <div>
@@ -70,98 +70,97 @@ $enabledStoredTokens = 0;
             <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
           <?php endfor; ?>
         </select>
-        </span>
       </div>
       <br />
-    <?php endif; ?>
+    </div>
+  <?php endif; ?>
 
-    <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
-      <?php $customerData = Mage::getSingleton('customer/session')->getCustomer(); ?>
-      <?php if (Mage::helper('cardlink_checkout')->allowsTokenization()) : ?>
+  <?php if (Mage::getSingleton('customer/session')->isLoggedIn()) : ?>
+    <?php $customerData = Mage::getSingleton('customer/session')->getCustomer(); ?>
+    <?php if (Mage::helper('cardlink_checkout')->allowsTokenization()) : ?>
 
-        <?php $customerStoredTokens = $this->getCustomerStoredTokens(); ?>
-        <?php if (!empty($customerStoredTokens)) : ?>
+      <?php $customerStoredTokens = $this->getCustomerStoredTokens(); ?>
+      <?php if (!empty($customerStoredTokens)) : ?>
+        <div>
+          <label for="payment[cardlink_stored_token]" class="required"><em>*</em><?php echo $this->__('Stored Cards'); ?></label>
           <div>
-            <label for="payment[cardlink_stored_token]" class="required"><em>*</em><?php echo $this->__('Stored Cards'); ?></label>
-            <div>
-              <dl>
-                <?php foreach ($customerStoredTokens as $storedToken) : ?>
-                  <dt id="cardlink_stored_token_<?php echo $storedToken->entityId; ?>_container">
+            <dl>
+              <?php foreach ($customerStoredTokens as $storedToken) : ?>
+                <dt id="cardlink_stored_token_<?php echo $storedToken->entityId; ?>_container">
 
-                    <?php if (!$storedToken->isExpired()) : ?>
-                      <?php $enabledStoredTokens++; ?>
-                      <input type="radio" class="radio cardlink_checkout_token_option" name="payment[cardlink_stored_token]" id="cardlink_stored_token_<?php echo $storedToken->entityId; ?>" value="<?php echo $storedToken->entityId; ?>" <?php if ($enabledStoredTokens == 1) : ?> checked="checked" <?php endif; ?> onchange="checkStoredTokenSelection(this)" data-disabled="<?php echo $storedToken->isExpired(); ?>" data-lastdigits="<?php echo $storedToken->lastDigits; ?>" data-expirymonth="<?php echo $storedToken->expiryMonth; ?>" data-expiryyear="<?php echo $storedToken->expiryYear; ?>" />
-                    <?php endif; ?>
+                  <?php if (!$storedToken->isExpired()) : ?>
+                    <?php $enabledStoredTokens++; ?>
+                    <input type="radio" class="radio cardlink_checkout_token_option" name="payment[cardlink_stored_token]" id="cardlink_stored_token_<?php echo $storedToken->entityId; ?>" value="<?php echo $storedToken->entityId; ?>" <?php if ($enabledStoredTokens == 1) : ?> checked="checked" <?php endif; ?> onchange="checkStoredTokenSelection(this)" data-disabled="<?php echo $storedToken->isExpired(); ?>" data-lastdigits="<?php echo $storedToken->lastDigits; ?>" data-expirymonth="<?php echo $storedToken->expiryMonth; ?>" data-expiryyear="<?php echo $storedToken->expiryYear; ?>" />
+                  <?php endif; ?>
 
-                    <div class="cardlink_checkout--stored-card-container">
-                      <label for="stored_token_<?php echo $storedToken->entityId; ?>">
+                  <div class="cardlink_checkout--stored-card-container">
+                    <label for="stored_token_<?php echo $storedToken->entityId; ?>">
 
-                        <?php if ($storedToken->type == 'visa') : ?>
-                          <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/visa.png', array('_secure' => true)); ?>" alt="VISA" />
-                        <?php elseif ($storedToken->type == 'mastercard') : ?>
-                          <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/mastercard.png', array('_secure' => true)); ?>" alt="Mastercard" />
-                        <?php elseif ($storedToken->type == 'diners') : ?>
-                          <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/diners.png', array('_secure' => true)); ?>" alt="Diners" />
-                        <?php elseif ($storedToken->type == 'discover') : ?>
-                          <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/discover.png', array('_secure' => true)); ?>" alt="Diners" />
-                        <?php elseif ($storedToken->type == 'amex') : ?>
-                          <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/amex.png', array('_secure' => true)); ?>" alt="AMEX" />
+                      <?php if ($storedToken->type == 'visa') : ?>
+                        <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/visa.png', array('_secure' => true)); ?>" alt="VISA" />
+                      <?php elseif ($storedToken->type == 'mastercard') : ?>
+                        <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/mastercard.png', array('_secure' => true)); ?>" alt="Mastercard" />
+                      <?php elseif ($storedToken->type == 'diners') : ?>
+                        <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/diners.png', array('_secure' => true)); ?>" alt="Diners" />
+                      <?php elseif ($storedToken->type == 'discover') : ?>
+                        <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/discover.png', array('_secure' => true)); ?>" alt="Diners" />
+                      <?php elseif ($storedToken->type == 'amex') : ?>
+                        <img class="cardlink_checkout--card-type-image" src="<?php echo $this->getSkinUrl('images/cardlink/amex.png', array('_secure' => true)); ?>" alt="AMEX" />
+                      <?php endif; ?>
+
+                      <div class="cardlink_checkout--card-info <?php if ($storedToken->isExpired()) : ?>cardlink_checkout--card-info-expired<?php endif; ?>">
+                        <span class="cardlink_checkout--card-pan"><?php echo Mage::helper('cardlink_checkout')->__('xxxx-%s', $storedToken->lastDigits); ?></span>
+                        <br />
+                        <span class="cardlink_checkout--card-expiry-date"><?php echo $storedToken->getFormattedExpiryDate(); ?></span>
+                        <?php if ($storedToken->isExpired()) : ?>
+                          <span class="cardlink_checkout--card-expiry-note"><?php echo $this->__('Expired'); ?></span>
                         <?php endif; ?>
 
-                        <div class="cardlink_checkout--card-info <?php if ($storedToken->isExpired()) : ?>cardlink_checkout--card-info-expired<?php endif; ?>">
-                          <span class="cardlink_checkout--card-pan"><?php echo Mage::helper('cardlink_checkout')->__('xxxx-%s', $storedToken->lastDigits); ?></span>
-                          <br />
-                          <span class="cardlink_checkout--card-expiry-date"><?php echo $storedToken->getFormattedExpiryDate(); ?></span>
-                          <?php if ($storedToken->isExpired()) : ?>
-                            <span class="cardlink_checkout--card-expiry-note"><?php echo $this->__('Expired'); ?></span>
-                          <?php endif; ?>
-
-                          <a href="#" onclick="deleteStoredToken(<?php echo $storedToken->entityId; ?>); return false;">
+                        <a href="#" onclick="deleteStoredToken(<?php echo $storedToken->entityId; ?>); return false;">
+                          <span>
                             <span>
-                              <span>
-                                <?php echo $this->__('Remove'); ?>
-                              </span>
+                              <?php echo $this->__('Remove'); ?>
                             </span>
-                          </a>
-                        </div>
-                      </label>
-
-                    </div>
-                  </dt>
-                <?php endforeach; ?>
-
-                <dt>
-                  <input type="radio" class="radio" name="payment[cardlink_stored_token]" id="cardlink_stored_token_0" value="0" onchange="checkStoredTokenSelection(this)" <?php if ($enabledStoredTokens == 0) : ?>checked="checked" <?php endif; ?> />
-                  <div class="cardlink_checkout--stored-card-container">
-                    <label for="cardlink_stored_token_0">
-                      <?php echo $this->__('New Card'); ?>
+                          </span>
+                        </a>
+                      </div>
                     </label>
+
                   </div>
                 </dt>
+              <?php endforeach; ?>
 
-              </dl>
-            </div>
+              <dt>
+                <input type="radio" class="radio" name="payment[cardlink_stored_token]" id="cardlink_stored_token_0" value="0" onchange="checkStoredTokenSelection(this)" <?php if ($enabledStoredTokens == 0) : ?>checked="checked" <?php endif; ?> />
+                <div class="cardlink_checkout--stored-card-container">
+                  <label for="cardlink_stored_token_0">
+                    <?php echo $this->__('New Card'); ?>
+                  </label>
+                </div>
+              </dt>
+
+            </dl>
           </div>
-          <br />
-        <?php endif; ?>
-
-        <div id="cardlink_checkout--tokenize-container">
-          <label for="payment[cardlink_tokenize]">
-            <input type="checkbox" id="payment[cardlink_tokenize]" name="payment[cardlink_tokenize]" /> <?php echo $this->__('Securely store card'); ?> </label>
         </div>
-
-        <?php if (!empty($customerStoredTokens)) : ?>
-          <script>
-            window.hideStoreTokenOption();
-          </script>
-        <?php endif; ?>
-
+        <br />
       <?php endif; ?>
+
+      <div id="cardlink_checkout--tokenize-container">
+        <label for="payment[cardlink_tokenize]">
+          <input type="checkbox" id="payment[cardlink_tokenize]" name="payment[cardlink_tokenize]" /> <?php echo $this->__('Securely store card'); ?> </label>
+      </div>
+
+      <?php if (!empty($customerStoredTokens)) : ?>
+        <script>
+          window.hideStoreTokenOption();
+        </script>
+      <?php endif; ?>
+
     <?php endif; ?>
+  <?php endif; ?>
 
-    </div>
 
-    <div>
-      <?php echo $this->getMethod()->getConfigData('message'); ?>
-    </div>
+  <div>
+    <?php echo $this->getMethod()->getConfigData('message'); ?>
+  </div>
 </div>

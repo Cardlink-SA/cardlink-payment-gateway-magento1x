@@ -20,6 +20,8 @@ class Cardlink_Checkout_Model_Payment extends Mage_Payment_Model_Method_Abstract
      */
     public function assignData($data)
     {
+        $grandTotal = Mage::getModel('checkout/cart')->getQuote()->getGrandTotal();
+
         $info = $this->getInfoInstance();
 
         $storedToken = 0;
@@ -34,7 +36,8 @@ class Cardlink_Checkout_Model_Payment extends Mage_Payment_Model_Method_Abstract
 
         // Retrieve number of installments requested by the customer.
         if ($data->getCardlinkInstallments()) {
-            $installments = max(0, $data->getCardlinkInstallments());
+            $maxInstallments = Mage::helper('cardlink_checkout/payment')->getMaxInstallments($grandTotal);
+            $installments = max(0, min($maxInstallments, $data->getCardlinkInstallments()));
         }
 
         $info->setCardlinkStoredToken($storedToken);

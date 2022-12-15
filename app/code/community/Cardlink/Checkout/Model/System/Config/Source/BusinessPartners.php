@@ -10,11 +10,11 @@ class Cardlink_Checkout_Model_System_Config_Source_BusinessPartners extends Card
 {
     const BUSINESS_PARTNER_CARDLINK = 'cardlink';
     const BUSINESS_PARTNER_NEXI = 'nexi';
-    const BUSINESS_PARTNER_WORDLINE = 'wordline';
+    const BUSINESS_PARTNER_WORLDLINE = 'worldline';
 
     protected $options = array(
         self::BUSINESS_PARTNER_CARDLINK => 'Cardlink',
         self::BUSINESS_PARTNER_NEXI  => 'Nexi',
-        self::BUSINESS_PARTNER_WORDLINE => 'Wordline'
+        self::BUSINESS_PARTNER_WORLDLINE => 'Worldline'
     );
 }

@@ -35,7 +35,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
                 case Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_NEXI:
                     return 'https://www.alphaecommerce.gr/vpos/shophandlermpi';
 
-                case Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_WORDLINE:
+                case Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_WORLDLINE:
                     return 'https://vpos.eurocommerce.gr/vpos/shophandlermpi';
 
                 default:
@@ -48,7 +48,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
                 case Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_NEXI:
                     return 'https://alphaecommerce-test.cardlink.gr/vpos/shophandlermpi';
 
-                case Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_WORDLINE:
+                case Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_WORLDLINE:
                     return 'https://eurocommerce-test.cardlink.gr/vpos/shophandlermpi';
 
                 default:
@@ -85,7 +85,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
             }
         }
 
-        return $maxInstallments;
+        return max(0, min(60, $maxInstallments));
     }
 
     /**
@@ -201,7 +201,8 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         }
         // Installments information.
         if ($helper->acceptsInstallments()) {
-            $installments = $order->getPayment()->getCardlinkInstallments() + 0;
+            $maxInstallments = $this->getMaxInstallments($formData[Cardlink_Checkout_Model_ApiFields::OrderAmount]);
+            $installments = max(0, min($maxInstallments, $order->getPayment()->getCardlinkInstallments() + 0));
 
             if ($installments > 1) {
                 $formData[Cardlink_Checkout_Model_ApiFields::ExtInstallmentoffset] = 0;

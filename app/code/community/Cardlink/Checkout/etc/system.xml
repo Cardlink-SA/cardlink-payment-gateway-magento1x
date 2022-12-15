@@ -156,13 +156,13 @@
 
 						<max_installments translate="label comment">
 							<label>Maximum Installments</label>
-							<comment>The maximum number of installments available for all orders.</comment>
+							<comment>The maximum number of installments available for all orders. Valid range: 0 to 60 installments.</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>41</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
-							<validate>required-entry validate-greater-than-zero</validate>
+							<validate>required-entry validate-greater-than-zero validate-digits-range digits-range-0-60</validate>
 							<depends>
 								<accept_installments>fixed</accept_installments>
 							</depends>
@@ -170,7 +170,7 @@
 
 						<installments_configuration translate="label comment">
 							<label>Order Amount Based Installments</label>
-							<comment>Set the amount ranges to limit the maximum allowed number of installments.</comment>
+							<comment>Set the amount ranges to limit the maximum allowed number of installments. Valid range: 0 to 60 installments.</comment>
 							<sort_order>42</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>

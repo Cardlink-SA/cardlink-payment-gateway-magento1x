@@ -35,7 +35,7 @@ class Cardlink_Checkout_Block_Adminhtml_System_Config_Form_Field_Installments ex
         // The maximum number of installments that the order amount range will allow the customer to select on the checkout page.
         $this->addColumn('max_installments', array(
             'name' => 'max_installments',
-            'class' => 'required-entry validate-not-negative-number',
+            'class' => 'required-entry validate-not-negative-number  validate-digits-range digits-range-0-60',
             'required' => true,
             'style' => 'width:80px',
             'label' => $helper->__('Maximum Installments'),

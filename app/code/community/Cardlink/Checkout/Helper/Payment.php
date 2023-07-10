@@ -308,7 +308,8 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
      */
     public function restoreQuote($order)
     {
-        $logEnabled = $this->dataHelper->logDebugInfoEnabled();
+        $helper = Mage::helper('cardlink_checkout');
+        $logEnabled = $helper->logDebugInfoEnabled();
 
         if ($order->getId()) {
             $quote = $this->_getQuote($order->getQuoteId());
@@ -322,15 +323,15 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
                     ->unsLastRealOrderId();
 
                 if ($logEnabled) {
-                    $this->dataHelper->logMessage("Quote {$quote->getId()} of order {$order->getIncrementId()} was restored.");
+                    $helper->logMessage("Quote {$quote->getId()} of order {$order->getIncrementId()} was restored.");
                 }
 
                 return true;
             } else if ($logEnabled) {
-                $this->dataHelper->logMessage("Failed to retrieve the quote of order {$order->getIncrementId()}.");
+                $helper->logMessage("Failed to retrieve the quote of order {$order->getIncrementId()}.");
             }
         } else if ($logEnabled) {
-            $this->dataHelper->logMessage("Failed to retrieve order to restore quote.");
+            $helper->logMessage("Failed to retrieve order to restore quote.");
         }
         return false;
     }
@@ -368,8 +369,10 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         if ($order->getId()) {
             $order->cancel()->save();
 
-            if ($this->dataHelper->logDebugInfoEnabled()) {
-                $this->dataHelper->logMessage("Order {$order->getIncrementId()} was canceled.");
+            $helper = Mage::helper('cardlink_checkout');
+            
+            if ($helper->logDebugInfoEnabled()) {
+                $helper->logMessage("Order {$order->getIncrementId()} was canceled.");
             }
 
             $payment = $order->getPayment();

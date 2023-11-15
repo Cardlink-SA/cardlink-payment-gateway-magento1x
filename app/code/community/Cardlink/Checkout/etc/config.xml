@@ -2,7 +2,7 @@
 <config>
 	<modules>
 		<Cardlink_Checkout>
-			<version>1.0.2</version>
+			<version>1.1.0</version>
 			<version_comments></version_comments>
 		</Cardlink_Checkout>
 	</modules>
@@ -113,8 +113,9 @@
 
 	<default>
 		<payment>
+
 			<cardlink_checkout>
-				<model>cardlink_checkout/payment</model>
+				<model>cardlink_checkout/payment_card</model>
 				<active>1</active>
 				<order_status>pending</order_status>
 				<allowspecific>0</allowspecific>
@@ -134,6 +135,26 @@
 				<log_debug_info>0</log_debug_info>
 				<!-- End of: Default configuration values -->
 			</cardlink_checkout>
+
+			<!--<cardlink_checkout_iris>
+				<model>cardlink_checkout/payment_iris</model>
+				<active>0</active>
+				<order_status>pending</order_status>
+				<allowspecific>0</allowspecific>
+				<sort_order>1</sort_order>
+				<!/-/- Start of: Default configuration values /-/->
+				<title>Pay through IRIS</title>
+				<display_payment_method_logo>1</display_payment_method_logo>
+				<description>Pay Via IRIS.</description>
+				<merchant_id></merchant_id>
+				<shared_secret></shared_secret>
+				<business_partner>nexi</business_partner>
+				<force_store_language>1</force_store_language>
+				<log_debug_info>0</log_debug_info>
+				<!/-/- End of: Default configuration values /-/->
+			</cardlink_checkout_iris>
+			-->
+
 		</payment>
 	</default>
 

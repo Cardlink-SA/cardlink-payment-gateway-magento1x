@@ -132,21 +132,21 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
      */
     public function getFormDataForOrder($orderId)
     {
+        $helper = Mage::helper('cardlink_checkout');
+
         $order = new Mage_Sales_Model_Order();
         $order->loadByIncrementId($orderId);
         $billingAddress = $order->getBillingAddress();
         $shippingAddress = $order->getShippingAddress();
         $payment = $order->getPayment();
+        $payment_method_code = $payment->getMethodInstance()->getCode();
 
         if ($billingAddress == false || $shippingAddress == false) {
-            $helper = Mage::helper('cardlink_checkout');
             if ($helper->logDebugInfoEnabled()) {
                 $helper->logMessage("Invalid billing/shipping address for order {$orderId}.");
             }
             return false;
         }
-
-        $helper = Mage::helper('cardlink_checkout');
 
         // Version number - must be '2'
         $formData[Cardlink_Checkout_Model_ApiFields::Version] = '2';
@@ -158,18 +158,28 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         // The Merchant ID
         $formData[Cardlink_Checkout_Model_ApiFields::MerchantId] = $helper->getMerchantId();
 
-        // The type of transaction to perform (Sale/Authorize).
-        $formData[Cardlink_Checkout_Model_ApiFields::TransactionType] = $this->getTransactionTypeValue();
 
         // Transaction success/failure return URLs
         $formData[Cardlink_Checkout_Model_ApiFields::ConfirmUrl] = $this->getTransactionSuccessUrl();
         $formData[Cardlink_Checkout_Model_ApiFields::CancelUrl] = $this->getTransactionCancelUrl();
 
         // Order information
-        $formData[Cardlink_Checkout_Model_ApiFields::OrderDescription] = "ORDER ${orderId}";
-        $formData[Cardlink_Checkout_Model_ApiFields::OrderId] =  $orderId;
-        $formData[Cardlink_Checkout_Model_ApiFields::OrderAmount] =  floatval($order->getGrandTotal()); // Get order total amount
+        $formData[Cardlink_Checkout_Model_ApiFields::OrderId] = $orderId;
+        $formData[Cardlink_Checkout_Model_ApiFields::OrderAmount] = floatval($order->getGrandTotal()); // Get order total amount
         $formData[Cardlink_Checkout_Model_ApiFields::Currency] = $order->getOrderCurrencyCode(); // Get order currency code
+
+        $diasCode = $helper->getDiasCode();
+        $enableIrisPayments = $helper->isIrisEnabled() && $diasCode != '';
+
+        if ($payment_method_code == 'cardlink_checkout_iris' && $enableIrisPayments) {
+            $formData[Cardlink_Checkout_Model_ApiFields::TransactionType] = '1';
+            $formData[Cardlink_Checkout_Model_ApiFields::PaymentMethod] = 'IRIS';
+            $formData[Cardlink_Checkout_Model_ApiFields::OrderDescription] = self::generateIrisRFCode($diasCode, $formData[Cardlink_Checkout_Model_ApiFields::OrderId], $formData[Cardlink_Checkout_Model_ApiFields::OrderAmount]);
+        } else {
+            $formData[Cardlink_Checkout_Model_ApiFields::OrderDescription] = 'ORDER ' . $orderId;
+            // The type of transaction to perform (Sale/Authorize).
+            $formData[Cardlink_Checkout_Model_ApiFields::TransactionType] = $this->getTransactionTypeValue();
+        }
 
         // Payer/customer information
         $formData[Cardlink_Checkout_Model_ApiFields::PayerEmail] = $billingAddress->getEmail();
@@ -177,14 +187,14 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
 
         // Billing information
         $formData[Cardlink_Checkout_Model_ApiFields::BillCountry] = $billingAddress->getCountryId();
-        $formData[Cardlink_Checkout_Model_ApiFields::BillState] = $billingAddress->getRegionCode();
+        //$formData[Cardlink_Checkout_Model_ApiFields::BillState] = $billingAddress->getRegionCode();
         $formData[Cardlink_Checkout_Model_ApiFields::BillZip] = $billingAddress->getPostcode();
         $formData[Cardlink_Checkout_Model_ApiFields::BillCity] = $billingAddress->getCity();
         $formData[Cardlink_Checkout_Model_ApiFields::BillAddress] = $billingAddress->getStreet(1);
 
         // Shipping information
         $formData[Cardlink_Checkout_Model_ApiFields::ShipCountry] = $shippingAddress->getCountryId();
-        $formData[Cardlink_Checkout_Model_ApiFields::ShipState] = $shippingAddress->getRegionCode();
+        //$formData[Cardlink_Checkout_Model_ApiFields::ShipState] = $shippingAddress->getRegionCode();
         $formData[Cardlink_Checkout_Model_ApiFields::ShipZip] = $shippingAddress->getPostcode();
         $formData[Cardlink_Checkout_Model_ApiFields::ShipCity] = $shippingAddress->getCity();
         $formData[Cardlink_Checkout_Model_ApiFields::ShipAddress] = $shippingAddress->getStreet(1);
@@ -229,7 +239,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         }
 
         // Calculate the digest of the transaction request data and append it.
-        $signedFormData = self::signRequestFormData($formData,  $helper->getSharedSecret());
+        $signedFormData = self::signRequestFormData($formData, $helper->getSharedSecret());
 
         if ($helper->logDebugInfoEnabled()) {
             $helper->logMessage("Valid payment request created for order {$signedFormData[Cardlink_Checkout_Model_ApiFields::OrderId]}.");
@@ -237,6 +247,46 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         }
 
         return $signedFormData;
+    }
+
+    /**
+     * Generate the Request Fund (RF) code for IRIS payments.
+     * @param string $diasCustomerCode The DIAS customer code of the merchant.
+     * @param mixed $orderId The ID of the order.
+     * @param mixed $amount The amount due.
+     * @return string The generated RF code.
+     */
+    public static function generateIrisRFCode(string $diasCustomerCode, $orderId, $amount)
+    {
+        /* calculate payment check code */
+        $paymentSum = 0;
+
+        if ($amount > 0) {
+            $ordertotal = str_replace([','], '.', (string) $amount);
+            $ordertotal = number_format($ordertotal, 2, '', '');
+            $ordertotal = strrev($ordertotal);
+            $factor = [1, 7, 3];
+            $idx = 0;
+            for ($i = 0; $i < strlen($ordertotal); $i++) {
+                $idx = $idx <= 2 ? $idx : 0;
+                $paymentSum += $ordertotal[$i] * $factor[$idx];
+                $idx++;
+            }
+        }
+
+        $orderIdNum = (int) filter_var($orderId, FILTER_SANITIZE_NUMBER_INT);
+
+        $randomNumber = str_pad($orderIdNum, 13, '0', STR_PAD_LEFT);
+        $paymentCode = $paymentSum ? ($paymentSum % 8) : '8';
+        $systemCode = '12';
+        $tempCode = $diasCustomerCode . $paymentCode . $systemCode . $randomNumber . '271500';
+        $mod97 = bcmod($tempCode, '97');
+
+        $cd = 98 - (int) $mod97;
+        $cd = str_pad((string) $cd, 2, '0', STR_PAD_LEFT);
+        $rf_payment_code = 'RF' . $cd . $diasCustomerCode . $paymentCode . $systemCode . $randomNumber;
+
+        return $rf_payment_code;
     }
 
     /**
@@ -280,7 +330,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         foreach (Cardlink_Checkout_Model_ApiFields::TRANSACTION_RESPONSE_DIGEST_CALCULATION_FIELD_ORDER as $field) {
             if ($field != Cardlink_Checkout_Model_ApiFields::Digest) {
                 if (array_key_exists($field, $formData)) {
-                    $concatenatedData .=  $formData[$field];
+                    $concatenatedData .= $formData[$field];
                 }
             }
         }
@@ -289,6 +339,33 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         $generatedDigest = $this->GenerateDigest($concatenatedData);
 
         return $formData[Cardlink_Checkout_Model_ApiFields::Digest] == $generatedDigest;
+    }
+
+    /**
+     * Validate the response data of the payment gateway for Alpha Bonus transactions 
+     * by recalculating and comparing the data digests in order to identify legitimate incoming request.
+     * 
+     * @param array $formData The payment gateway response data.
+     * @param string $sharedSecret The shared secret code of the merchant.
+     * 
+     * @return bool Identifies that the incoming data were sent by the payment gateway.
+     */
+    public function validateXlsBonusResponseData($formData, $sharedSecret)
+    {
+        $concatenatedData = '';
+
+        foreach (Cardlink_Checkout_Model_ApiFields::TRANSACTION_RESPONSE_XLSBONUS_DIGEST_CALCULATION_FIELD_ORDER as $field) {
+            if ($field != Cardlink_Checkout_Model_ApiFields::XlsBonusDigest) {
+                if (array_key_exists($field, $formData)) {
+                    $concatenatedData .= $formData[$field];
+                }
+            }
+        }
+
+        $concatenatedData .= $sharedSecret;
+        $generatedDigest = $this->GenerateDigest($concatenatedData);
+
+        return $formData[Cardlink_Checkout_Model_ApiFields::XlsBonusDigest] == $generatedDigest;
     }
 
     /**
@@ -308,7 +385,8 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
      */
     public function restoreQuote($order)
     {
-        $logEnabled = $this->dataHelper->logDebugInfoEnabled();
+        $helper = Mage::helper('cardlink_checkout');
+        $logEnabled = $helper->logDebugInfoEnabled();
 
         if ($order->getId()) {
             $quote = $this->_getQuote($order->getQuoteId());
@@ -322,15 +400,15 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
                     ->unsLastRealOrderId();
 
                 if ($logEnabled) {
-                    $this->dataHelper->logMessage("Quote {$quote->getId()} of order {$order->getIncrementId()} was restored.");
+                    $helper->logMessage("Quote {$quote->getId()} of order {$order->getIncrementId()} was restored.");
                 }
 
                 return true;
             } else if ($logEnabled) {
-                $this->dataHelper->logMessage("Failed to retrieve the quote of order {$order->getIncrementId()}.");
+                $helper->logMessage("Failed to retrieve the quote of order {$order->getIncrementId()}.");
             }
         } else if ($logEnabled) {
-            $this->dataHelper->logMessage("Failed to retrieve order to restore quote.");
+            $helper->logMessage("Failed to retrieve order to restore quote.");
         }
         return false;
     }
@@ -366,10 +444,11 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
     public function markCanceledPayment($order, $responseData)
     {
         if ($order->getId()) {
-            $order->cancel()->save();
 
-            if ($this->dataHelper->logDebugInfoEnabled()) {
-                $this->dataHelper->logMessage("Order {$order->getIncrementId()} was canceled.");
+            $helper = Mage::helper('cardlink_checkout');
+
+            if ($helper->logDebugInfoEnabled()) {
+                $helper->logMessage("Order {$order->getIncrementId()} was canceled.");
             }
 
             $payment = $order->getPayment();
@@ -383,6 +462,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
             $payment->save();
 
             $this->restoreQuote($order);
+            $order->cancel()->save();
         }
     }
 }

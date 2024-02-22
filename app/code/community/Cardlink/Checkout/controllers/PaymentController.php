@@ -39,14 +39,16 @@ class Cardlink_Checkout_PaymentController extends Mage_Core_Controller_Front_Act
             $block = Mage::app()->getLayout()->getBlock('root');
             if ($block) {
                 //check if block actually exists
+
+                $block->setPaymentGatewayUrl($formData['postUrl']);
+                unset($formData['postUrl']);
                 $block->setFormData($formData);
-                $block->setPaymentGatewayUrl(Mage::helper('cardlink_checkout/payment')->getPaymentGatewayDataPostUrl());
             }
             $this->renderLayout();
         } else {
             // Problem found with the data. Redirect the user to the checkout failure page.
-            Mage::getSingleton('core/session')
-                ->addError('Invalid payment gateway data');
+            Mage::getSingleton('core/session')->addError('Invalid payment gateway data');
+            @session_write_close();
 
             if ($helper->logDebugInfoEnabled()) {
                 $helper->logMessage("Invalid payment gateway data for order {$orderId}");
@@ -71,7 +73,19 @@ class Cardlink_Checkout_PaymentController extends Mage_Core_Controller_Front_Act
             Mage::helper('cardlink_checkout')->getSharedSecret()
         );
 
-        if ($isValidPaymentGatewayResponse) {
+        $isValidXlsBonusPaymentGatewayResponse = true;
+
+        // If performing a Bonus transaction, validate the xlsbonusdigest field
+        if (array_key_exists(Cardlink_Checkout_Model_ApiFields::XlsBonusDigest, $responseData)) {
+            $isValidXlsBonusPaymentGatewayResponse = Mage::helper('cardlink_checkout/payment')->validateXlsBonusResponseData(
+                $responseData,
+                Mage::helper('cardlink_checkout')->getSharedSecret()
+            );
+        }
+
+        $message = null;
+
+        if ($isValidPaymentGatewayResponse && $isValidXlsBonusPaymentGatewayResponse) {
 
             if (Mage::helper('cardlink_checkout')->logDebugInfoEnabled()) {
                 Mage::log("Received valid payment gateway response", null, 'cardlink.log', true);
@@ -90,7 +104,9 @@ class Cardlink_Checkout_PaymentController extends Mage_Core_Controller_Front_Act
                 self::markSuccessfulPayment($order, $responseData);
                 Mage::getSingleton('checkout/session')->unsQuoteId();
 
-                $message = $responseData[Cardlink_Checkout_Model_ApiFields::Message];
+                if (array_key_exists(Cardlink_Checkout_Model_ApiFields::Message, $responseData)) {
+                    $message = $responseData[Cardlink_Checkout_Model_ApiFields::Message];
+                }
                 $success = true;
             } else if (
                 $responseData[Cardlink_Checkout_Model_ApiFields::Status] === Cardlink_Checkout_Model_PaymentStatus::CANCELED
@@ -109,9 +125,13 @@ class Cardlink_Checkout_PaymentController extends Mage_Core_Controller_Front_Act
                 }
 
                 // If the response identifies the transaction as either CANCELED, REFUSED or ERROR add an error message.
-                $message = $responseData[Cardlink_Checkout_Model_ApiFields::Message];
-                Mage::getSingleton('core/session')
-                    ->addError($this->__($message));
+                if (array_key_exists(Cardlink_Checkout_Model_ApiFields::Message, $responseData)) {
+                    $message = $responseData[Cardlink_Checkout_Model_ApiFields::Message];
+                } else {
+                    $message = 'The payment was canceled by you or declined by the bank. Your order has been canceled.';
+                }
+                Mage::getSingleton('core/session')->addError(__($message));
+                @session_write_close();
             }
         } else {
             $this->_redirect('checkout/cart', array('_secure' => true));
@@ -129,7 +149,9 @@ class Cardlink_Checkout_PaymentController extends Mage_Core_Controller_Front_Act
                     : Mage::getUrl('checkout/onepage/failure', array('_secure' => true));
 
                 $block->setRedirectUrl($redirectUrl);
-                $block->setMessage($message);
+                if (isset($message)) {
+                    $block->setMessage(__($message));
+                }
                 $block->setOrderId($orderId);
             }
             $this->renderLayout();
@@ -232,22 +254,24 @@ class Cardlink_Checkout_PaymentController extends Mage_Core_Controller_Front_Act
                 && $payment->getCardlinkTokenize()
                 && $payment->getCardlinkStoredToken() == '0'
             ) {
-                $merchantId = Mage::helper('cardlink_checkout')->getMerchantId();
-                $customerId = $order->getCustomerId();
+                if (array_key_exists(Cardlink_Checkout_Model_ApiFields::ExtToken, $responseData)) {
+                    $merchantId = Mage::helper('cardlink_checkout')->getMerchantId();
+                    $customerId = $order->getCustomerId();
 
-                if ($helper->logDebugInfoEnabled()) {
-                    $helper->logMessage("Storing token {$responseData[Cardlink_Checkout_Model_ApiFields::PaymentMethod]}/{$responseData[Cardlink_Checkout_Model_ApiFields::ExtTokenPanEnd]} for customer {$customerId} of merchant {$merchantId}.");
+                    if ($helper->logDebugInfoEnabled()) {
+                        $helper->logMessage("Storing token {$responseData[Cardlink_Checkout_Model_ApiFields::PaymentMethod]}/{$responseData[Cardlink_Checkout_Model_ApiFields::ExtTokenPanEnd]} for customer {$customerId} of merchant {$merchantId}.");
+                    }
+
+                    // Store the tokenized card information.
+                    Mage::helper('cardlink_checkout/tokenization')->storeTokenForCustomer(
+                        $merchantId,
+                        $customerId,
+                        $responseData[Cardlink_Checkout_Model_ApiFields::ExtToken],
+                        $responseData[Cardlink_Checkout_Model_ApiFields::PaymentMethod],
+                        $responseData[Cardlink_Checkout_Model_ApiFields::ExtTokenPanEnd],
+                        $responseData[Cardlink_Checkout_Model_ApiFields::ExtTokenExpiration]
+                    );
                 }
-
-                // Store the tokenized card information.
-                Mage::helper('cardlink_checkout/tokenization')->storeTokenForCustomer(
-                    $merchantId,
-                    $customerId,
-                    $responseData[Cardlink_Checkout_Model_ApiFields::ExtToken],
-                    $responseData[Cardlink_Checkout_Model_ApiFields::PaymentMethod],
-                    $responseData[Cardlink_Checkout_Model_ApiFields::ExtTokenPanEnd],
-                    $responseData[Cardlink_Checkout_Model_ApiFields::ExtTokenExpiration]
-                );
             }
         }
     }

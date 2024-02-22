@@ -25,6 +25,15 @@ class Cardlink_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_CONFIG_CSS_URL = 'payment/cardlink_checkout/css_url';
     const XML_PATH_CONFIG_LOG_DEBUG_INFO = 'payment/cardlink_checkout/log_debug_info';
 
+    const XML_PATH_CONFIG_IRIS_ENABLED = 'payment/cardlink_checkout_iris/active';
+    const XML_PATH_CONFIG_IRIS_DIAS_CODE = 'payment/cardlink_checkout_iris/dias_code';
+    const XML_PATH_CONFIG_IRIS_MERCHANT_ID = 'payment/cardlink_checkout_iris/merchant_id';
+    const XML_PATH_CONFIG_IRIS_SHARED_SECRET = 'payment/cardlink_checkout_iris/shared_secret';
+    const XML_PATH_CONFIG_IRIS_BUSINESS_PARTNER = 'payment/cardlink_checkout_iris/business_partner';
+    const XML_PATH_CONFIG_IRIS_TRANSACTION_ENVIRONMENT = 'payment/cardlink_checkout_iris/transaction_environment';
+    const XML_PATH_CONFIG_IRIS_SHORT_DESCRIPTION = 'payment/cardlink_checkout_iris/description';
+    const XML_PATH_CONFIG_IRIS_DISPLAY_PAYMENT_METHOD_LOGO = 'payment/cardlink_checkout_iris/display_payment_method_logo';
+    const XML_PATH_CONFIG_IRIS_CSS_URL = 'payment/cardlink_checkout_iris/css_url';
     /**
      * Returns the configured business partner.
      *
@@ -36,7 +45,7 @@ class Cardlink_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Returns the configured shared secret code.
+     * Returns the configured short description.
      *
      * @return string
      */
@@ -98,7 +107,7 @@ class Cardlink_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
      *
      * @return string
      */
-    public function  getTransactionType()
+    public function getTransactionType()
     {
         $config = Mage::getStoreConfig(self::XML_PATH_CONFIG_TRANSACTION_TYPE);
 
@@ -261,4 +270,107 @@ class Cardlink_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
         }
         Mage::log($logMessage, $level, 'cardlink.log', true);
     }
+
+    /**
+     * Returns the configured DIAS code.
+     * 
+     * @return string
+     */
+    public function getDiasCode()
+    {
+        return trim(Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_DIAS_CODE));
+    }
+
+    /**
+     * Returns whether IRIS payment method is enabled.
+     * 
+     * @return string
+     */
+    public function isIrisEnabled()
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_CONFIG_IRIS_ENABLED);
+    }
+
+    /**
+     * Returns the configured business partner.
+     *
+     * @return string
+     */
+    public function getIrisBusinessPartner()
+    {
+        $config = Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_BUSINESS_PARTNER);
+
+        if (!$config) {
+            return Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_CARDLINK;
+        }
+
+        return $config;
+    }
+
+    /**
+     * Returns the configured transaction environment (production/test).
+     *
+     * @return string
+     */
+    public function getIrisTransactionEnvironment()
+    {
+        $config = Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_TRANSACTION_ENVIRONMENT);
+
+        if (!$config) {
+            return Cardlink_Checkout_Model_System_Config_Source_TransactionEnvironments::PRODUCTION_ENVIRONMENT;
+        }
+
+        return $config;
+    }
+
+    /**
+     * Returns the configured merchant ID.
+     *
+     * @return string
+     */
+    public function getIrisMerchantId()
+    {
+        return Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_MERCHANT_ID);
+    }
+
+    /**
+     * Returns the configured shared secret code.
+     *
+     * @return string
+     */
+    public function getIrisSharedSecret()
+    {
+        return Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_SHARED_SECRET);
+    }
+
+    /**
+     * Returns the configured shared secret code.
+     *
+     * @return string
+     */
+    public function getIrisDescription()
+    {
+        return Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_SHORT_DESCRIPTION);
+    }
+
+    /**
+     * Determines that the IRIS logo will be displayed next to the payment method title at the checkout page.
+     *
+     * @return bool
+     */
+    public function displayIrisLogoInTitle()
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_CONFIG_IRIS_DISPLAY_PAYMENT_METHOD_LOGO);
+    }
+
+    /**
+     * Returns the configured custom CSS URL for use in the Cardlink payment gateway's pages.
+     *
+     * @return string
+     */
+    public function getIrisCssUrl()
+    {
+        return Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_CSS_URL);
+    }
+
 }

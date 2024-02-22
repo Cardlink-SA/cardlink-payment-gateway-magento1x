@@ -1,0 +1,18 @@
+<div class="form-list" id="payment_form_<?php echo $this->getMethodCode(); ?>" style="display:none;">
+
+  <?php
+
+  $description = $this->__(Mage::helper('cardlink_checkout')->getIrisDescription());
+
+  if (!empty($description)):
+    ?>
+    <div>
+      <?php echo $description; ?>
+    </div>
+    <br />
+  <?php endif; ?>
+
+  <div>
+    <?php echo $this->getMethod()->getConfigData('message'); ?>
+  </div>
+</div>

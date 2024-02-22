@@ -22,11 +22,8 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
      *
      * @return string The URL of the payment gateway.
      */
-    public function getPaymentGatewayDataPostUrl()
+    public function getPaymentGatewayDataPostUrl($businessPartner, $transactionEnvironment)
     {
-        $businessPartner = Mage::helper('cardlink_checkout')->getBusinessPartner();
-        $transactionEnvironment = Mage::helper('cardlink_checkout')->getTransactionEnvironment();
-
         if ($transactionEnvironment == Cardlink_Checkout_Model_System_Config_Source_TransactionEnvironments::PRODUCTION_ENVIRONMENT) {
             switch ($businessPartner) {
                 case Cardlink_Checkout_Model_System_Config_Source_BusinessPartners::BUSINESS_PARTNER_CARDLINK:
@@ -56,6 +53,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         }
         return NULL;
     }
+
 
     /**
      * Returns the maximum number of installments according to the order amount.
@@ -155,10 +153,6 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         //// Maximum number of payment retries - set to 10
         //$formData[Cardlink_Checkout_Model_ApiFields::MaxPayRetries] = '10';
 
-        // The Merchant ID
-        $formData[Cardlink_Checkout_Model_ApiFields::MerchantId] = $helper->getMerchantId();
-
-
         // Transaction success/failure return URLs
         $formData[Cardlink_Checkout_Model_ApiFields::ConfirmUrl] = $this->getTransactionSuccessUrl();
         $formData[Cardlink_Checkout_Model_ApiFields::CancelUrl] = $this->getTransactionCancelUrl();
@@ -172,13 +166,60 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         $enableIrisPayments = $helper->isIrisEnabled() && $diasCode != '';
 
         if ($payment_method_code == 'cardlink_checkout_iris' && $enableIrisPayments) {
+
+            $postUrl = $this->getPaymentGatewayDataPostUrl($helper->getIrisBusinessPartner(), $helper->getIrisTransactionEnvironment());
+
+            $sharedSecret = $helper->getIrisSharedSecret();
+            // The Merchant ID
+            $formData[Cardlink_Checkout_Model_ApiFields::MerchantId] = $helper->getIrisMerchantId();
             $formData[Cardlink_Checkout_Model_ApiFields::TransactionType] = '1';
             $formData[Cardlink_Checkout_Model_ApiFields::PaymentMethod] = 'IRIS';
             $formData[Cardlink_Checkout_Model_ApiFields::OrderDescription] = self::generateIrisRFCode($diasCode, $formData[Cardlink_Checkout_Model_ApiFields::OrderId], $formData[Cardlink_Checkout_Model_ApiFields::OrderAmount]);
+            // The optional URL of a CSS file to be included in the pages of the payment gateway for custom formatting.
+            $cssUrl = trim($helper->getIrisCssUrl());
+
         } else {
+
+            $postUrl = $this->getPaymentGatewayDataPostUrl($helper->getBusinessPartner(), $helper->getTransactionEnvironment());
+
+            $sharedSecret = $helper->getSharedSecret();
+            // The Merchant ID
+            $formData[Cardlink_Checkout_Model_ApiFields::MerchantId] = $helper->getMerchantId();
             $formData[Cardlink_Checkout_Model_ApiFields::OrderDescription] = 'ORDER ' . $orderId;
             // The type of transaction to perform (Sale/Authorize).
             $formData[Cardlink_Checkout_Model_ApiFields::TransactionType] = $this->getTransactionTypeValue();
+
+            // The optional URL of a CSS file to be included in the pages of the payment gateway for custom formatting.
+            $cssUrl = trim($helper->getCssUrl());
+
+            // Installments information.
+            if ($helper->acceptsInstallments()) {
+                $maxInstallments = $this->getMaxInstallments($formData[Cardlink_Checkout_Model_ApiFields::OrderAmount]);
+                $installments = max(0, min($maxInstallments, $order->getPayment()->getCardlinkInstallments() + 0));
+
+                if ($installments > 1) {
+                    $formData[Cardlink_Checkout_Model_ApiFields::ExtInstallmentoffset] = 0;
+                    $formData[Cardlink_Checkout_Model_ApiFields::ExtInstallmentperiod] = $installments;
+                }
+            }
+
+            // Tokenization
+            if ($helper->allowsTokenization()) {
+                if ($payment->getCardlinkStoredToken()) {
+                    $storedToken = Mage::helper('cardlink_checkout/tokenization')->getCustomerStoredToken(
+                        Mage::helper('cardlink_checkout')->getMerchantId(),
+                        $order->getCustomerId(),
+                        $payment->getCardlinkStoredToken()
+                    );
+
+                    if ($storedToken != null && $storedToken->token != null) {
+                        $formData[Cardlink_Checkout_Model_ApiFields::ExtTokenOptions] = 100;
+                        $formData[Cardlink_Checkout_Model_ApiFields::ExtToken] = $storedToken->token;
+                    }
+                } else if ($payment->getCardlinkTokenize()) {
+                    $formData[Cardlink_Checkout_Model_ApiFields::ExtTokenOptions] = 100;
+                }
+            }
         }
 
         // Payer/customer information
@@ -199,53 +240,24 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         $formData[Cardlink_Checkout_Model_ApiFields::ShipCity] = $shippingAddress->getCity();
         $formData[Cardlink_Checkout_Model_ApiFields::ShipAddress] = $shippingAddress->getStreet(1);
 
-        // The optional URL of a CSS file to be included in the pages of the payment gateway for custom formatting.
-        $cssUrl = trim($helper->getCssUrl());
-        if ($cssUrl != '') {
-            $formData[Cardlink_Checkout_Model_ApiFields::CssUrl] = $cssUrl;
-        }
-
         // Instruct the payment gateway to use the store language for its UI.
         if ($helper->getForceStoreLanguage()) {
             $formData[Cardlink_Checkout_Model_ApiFields::Language] = explode('_', Mage::getStoreConfig('general/locale/code'))[0];
         }
-        // Installments information.
-        if ($helper->acceptsInstallments()) {
-            $maxInstallments = $this->getMaxInstallments($formData[Cardlink_Checkout_Model_ApiFields::OrderAmount]);
-            $installments = max(0, min($maxInstallments, $order->getPayment()->getCardlinkInstallments() + 0));
 
-            if ($installments > 1) {
-                $formData[Cardlink_Checkout_Model_ApiFields::ExtInstallmentoffset] = 0;
-                $formData[Cardlink_Checkout_Model_ApiFields::ExtInstallmentperiod] = $installments;
-            }
-        }
-
-        // Tokenization
-        if ($helper->allowsTokenization()) {
-            if ($payment->getCardlinkStoredToken()) {
-                $storedToken = Mage::helper('cardlink_checkout/tokenization')->getCustomerStoredToken(
-                    Mage::helper('cardlink_checkout')->getMerchantId(),
-                    $order->getCustomerId(),
-                    $payment->getCardlinkStoredToken()
-                );
-
-                if ($storedToken != null && $storedToken->token != null) {
-                    $formData[Cardlink_Checkout_Model_ApiFields::ExtTokenOptions] = 100;
-                    $formData[Cardlink_Checkout_Model_ApiFields::ExtToken] = $storedToken->token;
-                }
-            } else if ($payment->getCardlinkTokenize()) {
-                $formData[Cardlink_Checkout_Model_ApiFields::ExtTokenOptions] = 100;
-            }
+        if ($cssUrl != '') {
+            $formData[Cardlink_Checkout_Model_ApiFields::CssUrl] = $cssUrl;
         }
 
         // Calculate the digest of the transaction request data and append it.
-        $signedFormData = self::signRequestFormData($formData, $helper->getSharedSecret());
+        $signedFormData = self::signRequestFormData($formData, $sharedSecret);
 
         if ($helper->logDebugInfoEnabled()) {
             $helper->logMessage("Valid payment request created for order {$signedFormData[Cardlink_Checkout_Model_ApiFields::OrderId]}.");
             $helper->logMessage($signedFormData);
         }
 
+        $signedFormData['postUrl'] = $postUrl;
         return $signedFormData;
     }
 
@@ -433,7 +445,6 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
     {
         return Mage::getModel('sales/quote')->load($quoteId);
     }
-
 
     /**
      * Mark an order as canceled, store additional payment information and restore the user's cart.

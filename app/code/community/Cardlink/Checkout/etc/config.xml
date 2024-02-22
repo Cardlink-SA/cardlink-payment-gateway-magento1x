@@ -127,6 +127,7 @@
 				<merchant_id></merchant_id>
 				<shared_secret></shared_secret>
 				<business_partner>cardlink</business_partner>
+				<transaction_environment>1</transaction_environment>
 				<payment_action>capture</payment_action>
 				<accept_installments>0</accept_installments>
 				<max_installments>12</max_installments>
@@ -136,24 +137,22 @@
 				<!-- End of: Default configuration values -->
 			</cardlink_checkout>
 
-			<!--<cardlink_checkout_iris>
+			<cardlink_checkout_iris>
 				<model>cardlink_checkout/payment_iris</model>
 				<active>0</active>
 				<order_status>pending</order_status>
 				<allowspecific>0</allowspecific>
 				<sort_order>1</sort_order>
-				<!/-/- Start of: Default configuration values /-/->
+				<!-- Start of: Default configuration values -->
 				<title>Pay through IRIS</title>
 				<display_payment_method_logo>1</display_payment_method_logo>
+				<transaction_environment>1</transaction_environment>
 				<description>Pay Via IRIS.</description>
 				<merchant_id></merchant_id>
 				<shared_secret></shared_secret>
 				<business_partner>nexi</business_partner>
-				<force_store_language>1</force_store_language>
-				<log_debug_info>0</log_debug_info>
-				<!/-/- End of: Default configuration values /-/->
+				<!-- End of: Default configuration values -->
 			</cardlink_checkout_iris>
-			-->
 
 		</payment>
 	</default>

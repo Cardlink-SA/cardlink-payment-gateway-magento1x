@@ -102,28 +102,32 @@ class Cardlink_Checkout_Helper_Tokenization
      */
     public function storeTokenForCustomer($merchantId, $customerId, $token, $type, $panLastDigits, $panExpiration)
     {
-        $resource = Mage::getSingleton('core/resource');
-        $writeConnection = $resource->getConnection('core_write');
-        $query = 'INSERT INTO '
-            . $resource->getTableName('cardlink_stored_tokens')
-            . ' SET `merchant_id`=:merchantId,'
-            . ' `customer_id`=:customerId,'
-            . ' `token`=:token,'
-            . ' `type`=:type,'
-            . ' `last_digits`=:lastDigits,'
-            . ' `expiration`=:expiration,'
-            . ' `created_at`=CURRENT_TIMESTAMP()';
+        try {
+            $resource = Mage::getSingleton('core/resource');
+            $writeConnection = $resource->getConnection('core_write');
+            $query = 'INSERT INTO '
+                . $resource->getTableName('cardlink_stored_tokens')
+                . ' SET `merchant_id`=:merchantId,'
+                . ' `customer_id`=:customerId,'
+                . ' `token`=:token,'
+                . ' `type`=:type,'
+                . ' `last_digits`=:lastDigits,'
+                . ' `expiration`=:expiration,'
+                . ' `created_at`=CURRENT_TIMESTAMP()';
 
-        $binds = array(
-            'merchantId' => $merchantId,
-            'customerId' => $customerId,
-            'token' => $token,
-            'type' => $type,
-            'lastDigits' => $panLastDigits,
-            'expiration' => $panExpiration
-        );
+            $binds = array(
+                'merchantId' => $merchantId,
+                'customerId' => $customerId,
+                'token' => $token,
+                'type' => $type,
+                'lastDigits' => $panLastDigits,
+                'expiration' => $panExpiration
+            );
 
-        $writeConnection->query($query, $binds);
+            $writeConnection->query($query, $binds);
+        } catch (\Exception $ex) {
+
+        }
     }
 
     /**
@@ -138,7 +142,7 @@ class Cardlink_Checkout_Helper_Tokenization
         $resource = Mage::getSingleton('core/resource');
         $writeConnection = $resource->getConnection('core_write');
 
-        $result =  $writeConnection->update(
+        $result = $writeConnection->update(
             $resource->getTableName('cardlink_stored_tokens'),
             array("token" => NULL),
             array(

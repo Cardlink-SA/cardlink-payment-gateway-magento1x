@@ -98,11 +98,22 @@
 							<show_in_store>1</show_in_store>
 						</business_partner>
 
+						<transaction_environment translate="label comment">
+							<label>Transactions Environment</label>
+							<comment>Identify the working environment for payment transactions.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>cardlink_checkout/system_config_source_transactionEnvironments</source_model>
+							<sort_order>31</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</transaction_environment>
+
 						<merchant_id translate="label comment">
 							<label>Merchant ID</label>
 							<comment>The merchant ID provided by Cardlink.</comment>
 							<frontend_type>text</frontend_type>
-							<sort_order>31</sort_order>
+							<sort_order>32</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
@@ -113,23 +124,12 @@
 							<label>Shared Secret</label>
 							<comment>The shared secret code provided by Cardlink.</comment>
 							<frontend_type>password</frontend_type>
-							<sort_order>32</sort_order>
+							<sort_order>33</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
 							<validate>required-entry</validate>
 						</shared_secret>
-
-						<transaction_environment translate="label comment">
-							<label>Transactions Environment</label>
-							<comment>Identify the working environment for payment transactions.</comment>
-							<frontend_type>select</frontend_type>
-							<source_model>cardlink_checkout/system_config_source_transactionEnvironments</source_model>
-							<sort_order>33</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</transaction_environment>
 
 						<transaction_type translate="label comment">
 							<label>Payment Action</label>
@@ -195,12 +195,34 @@
 							<show_in_store>1</show_in_store>
 						</allow_tokenization>
 
+						<payment_gateway_css_url translate="label comment">
+							<label>CSS URL</label>
+							<comment>Full URL of custom CSS stylesheet, to be used to display payment page styles.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>51</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>validate-url</validate>
+						</payment_gateway_css_url>
+
+						<display_payment_method_logo translate="label comment">
+							<label>Display Cardlink Logo</label>
+							<comment>Display the Cardlink logo next to the payment method title.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>60</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</display_payment_method_logo>
+
 						<checkout_in_iframe translate="label comment">
 							<label>Checkout without Leaving Your Store</label>
 							<comment>Perform the payment flow without having the customers leave your website for Cardlink's payment gateway. You will need to have a valid SSL certificate properly configured on your domain.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>90</sort_order>
+							<sort_order>70</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
@@ -211,40 +233,18 @@
 							<comment>Instruct Cardlink's Payment Gateway to use the language of the store that the order gets placed.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>91</sort_order>
+							<sort_order>71</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
 						</force_store_language>
-
-						<display_payment_method_logo translate="label comment">
-							<label>Display Cardlink Logo</label>
-							<comment>Display the Cardlink logo next to the payment method title.</comment>
-							<frontend_type>select</frontend_type>
-							<source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>92</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</display_payment_method_logo>
-
-						<payment_gateway_css_url translate="label comment">
-							<label>CSS URL</label>
-							<comment>Full URL of custom CSS stylesheet, to be used to display payment page styles.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>93</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-							<validate>validate-url</validate>
-						</payment_gateway_css_url>
 
 						<log_debug_info translate="label comment">
 							<label>Log Debug Information</label>
 							<comment>Store debug log information in file cardlink.log. Use only for a limited time frame and delete the log file afterwards.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>94</sort_order>
+							<sort_order>80</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
@@ -256,7 +256,7 @@
 				<!--
 				<cardlink_checkout_iris translate="label comment" module="cardlink_checkout">
 					<label>Cardlink CheckOut - Pay via IRIS</label>
-					<comment>Merchant and display settings for the 'Pay via Card' method are shared with this method.</comment>
+					<comment>Display and debug settings for the 'Pay via Card' method are shared with this method.</comment>
 					<frontend_type>text</frontend_type>
 					<sort_order>10</sort_order>
 					<show_in_default>1</show_in_default>
@@ -339,23 +339,78 @@
 							<show_in_store>1</show_in_store>
 						</description>
 
+						<business_partner translate="label comment">
+							<label>Business Partner</label>
+							<comment>Identify the business partner that will handle payment transactions as agreed with Cardlink.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>cardlink_checkout/system_config_source_businessPartnersIris</source_model>
+							<sort_order>30</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</business_partner>
+
+						<transaction_environment translate="label comment">
+							<label>Transactions Environment</label>
+							<comment>Identify the working environment for payment transactions.</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>cardlink_checkout/system_config_source_transactionEnvironments</source_model>
+							<sort_order>31</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</transaction_environment>
+
+						<merchant_id translate="label comment">
+							<label>Merchant ID</label>
+							<comment>The merchant ID provided by Cardlink.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>required-entry</validate>
+						</merchant_id>
+
+						<shared_secret translate="label comment">
+							<label>Shared Secret</label>
+							<comment>The shared secret code provided by Cardlink.</comment>
+							<frontend_type>password</frontend_type>
+							<sort_order>41</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>required-entry</validate>
+						</shared_secret>
+
 						<dias_code translate="label comment">
-							<label>DIAS Code</label>
+							<label>Seller ID</label>
 							<comment>The merchant's code on the DIAS network.</comment>
 							<frontend_type>text</frontend_type>
-							<sort_order>31</sort_order>
+							<sort_order>42</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
 							<validate>required-entry</validate>
 						</dias_code>
 
+						<payment_gateway_css_url translate="label comment">
+							<label>CSS URL</label>
+							<comment>Full URL of custom CSS stylesheet, to be used to display payment page styles.</comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>50</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+							<validate>validate-url</validate>
+						</payment_gateway_css_url>
+
 						<display_payment_method_logo translate="label comment">
 							<label>Display IRIS Logo</label>
 							<comment>Display the IRIS logo next to the payment method title.</comment>
 							<frontend_type>select</frontend_type>
 							<source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>92</sort_order>
+							<sort_order>60</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
@@ -364,6 +419,7 @@
 					</fields>
 				</cardlink_checkout_iris>
 				-->
+
 			</groups>
 		</payment>
 

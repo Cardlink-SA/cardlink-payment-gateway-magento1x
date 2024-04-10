@@ -8,6 +8,15 @@
 - License: GPLv2 or later
 - License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
+## Changelog
+
+- **1.1.0**
+  - Bug fixes.
+  - Validate Alpha Bonus digest.
+- **1.0.0**
+  - Initial release
+
+
 ## Description
 
 Cardlink Payment Gateway allows you to accept payment through various schemes such as Visa, Mastercard, Maestro, American Express, Diners, Discover cards on your website, with or without variable installments.
@@ -56,12 +65,6 @@ location / {
 ```
 
 If you are unsure or unfamiliar with the actions described above, please ask a trained IT person or contact your hosting provider to do them for you.
-
-## Changelog
-
-### 1.0.0
-
-Initial release
 
 ## Support tickets
 

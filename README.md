@@ -10,12 +10,13 @@
 
 ## Changelog
 
+- **1.0.0**
+  - Initial release
 - **1.1.0**
   - Bug fixes.
   - Validate Alpha Bonus digest.
-- **1.0.0**
-  - Initial release
-
+- **1.1.1**
+  - Fixed bug that inhibits sending new order notification email.
 
 ## Description
 
@@ -47,7 +48,13 @@ You need to manually upload the contents of the .zip file of the module's latest
 
 Depending on your hosting provider, you will probably have to be familiar with the process of transferring files using an FTP or SFTP client. If no FTP/SFTP access is provided, use your hosting provider's administration panel to upload the folders to the folder of your Magento installation.
 
-For hosting solutions running the Apache web server software, you will need to add the following lines to your web site's root ``.htaccess`` file. These will manipulate all cookies set by your Magento store to allow customer sessions to persist after returning from the payment gateway. If you fail to properly set these, customers returning from the payment gateway will be automatically logged out from their accounts.
+### Required Hosting Settings 
+
+For security reasons, Web browsers will not send target domain cookies when the referrer website is on another domain and data are POSTed unless the ``SameSite`` option of these cookies is set to the value ``None``. If you fail to properly configure the required hosting settings, customers returning from the payment gateway will be automatically logged out from their accounts. The following configuration instructions will manipulate all cookies set by your store to allow customer sessions to persist after returning from the payment gateway.
+
+#### Apache Web Server
+
+For hosting solutions running the Apache web server software, you will need to add the following lines to your web site’s root ``.htaccess`` file. Make sure the ``mod_headers`` Apache module is installed and active.
 
 ```
 <IfModule mod_headers.c>
@@ -55,13 +62,31 @@ Header always edit Set-Cookie ^(.*)$ $1;SameSite=None;Secure
 </IfModule>
 ```
 
-If your hosting provider uses the Nginx web server instead, you will need to add/edit the following lines of code to your virtual host's configuration file.
+#### Nginx Web Server
+
+If your hosting provider uses the Nginx web server instead, you will need to add/edit the following lines of code to your virtual host’s configuration file.
 
 ```
 location / {
- proxy_cookie_path / "/; SameSite=None; Secure";
- …
+    proxy_cookie_path / "/; SameSite=None; Secure";
+    …
 }
+```
+
+#### Plesk Hosting Control Panel
+
+If you are using Plesk and nginx in proxy mode, under ``Apache & nginx Setting for ... > Additional nginx directives`` add only the following line:
+
+```
+proxy_cookie_path / "/; SameSite=None; Secure";
+```
+
+If you are only using Apache, add the following configuration lines in the ``Additional Apache directives`` section on the same page. By default, Plesk has the Apache ``mod_headers`` module installed and active however, verify that this is the case for your Plesk installation.
+
+```
+<IfModule mod_headers.c>
+Header always edit Set-Cookie ^(.*)$ $1;SameSite=None;Secure
+</IfModule>
 ```
 
 If you are unsure or unfamiliar with the actions described above, please ask a trained IT person or contact your hosting provider to do them for you.

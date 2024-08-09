@@ -45,6 +45,6 @@ class Cardlink_Checkout_Model_Payment_Iris extends Mage_Payment_Model_Method_Abs
 
     public function isAvailable($quote = null)
     {
-        return false;
+        return true;
     }
 }

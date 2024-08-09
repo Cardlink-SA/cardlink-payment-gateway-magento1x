@@ -248,6 +248,12 @@ class Cardlink_Checkout_PaymentController extends Mage_Core_Controller_Front_Act
                 }
             }
 
+            try {
+                $order->sendNewOrderEmail();
+            } catch (Exception $e) {
+
+            }
+
             // If the user asked for card tokenization.
             if (
                 Mage::helper('cardlink_checkout')->allowsTokenization()

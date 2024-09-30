@@ -2,7 +2,7 @@
 <config>
 	<modules>
 		<Cardlink_Checkout>
-			<version>1.1.1</version>
+			<version>1.1.2</version>
 			<version_comments></version_comments>
 		</Cardlink_Checkout>
 	</modules>
@@ -135,7 +135,6 @@
 				<log_debug_info>0</log_debug_info>
 			</cardlink_checkout>
 
-			<!--
 			<cardlink_checkout_iris>
 				<model>cardlink_checkout/payment_iris</model>
 				<active>0</active>
@@ -150,7 +149,6 @@
 				<shared_secret></shared_secret>
 				<business_partner>nexi</business_partner>
 			</cardlink_checkout_iris>
-			-->
 
 		</payment>
 	</default>

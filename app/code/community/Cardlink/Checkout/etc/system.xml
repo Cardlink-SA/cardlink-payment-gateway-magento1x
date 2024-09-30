@@ -253,7 +253,6 @@
 					</fields>
 				</cardlink_checkout>
 
-				<!--
 				<cardlink_checkout_iris translate="label comment" module="cardlink_checkout">
 					<label>Cardlink CheckOut - Pay via IRIS</label>
 					<comment>Display and debug settings for the 'Pay via Card' method are shared with this method.</comment>
@@ -418,7 +417,6 @@
 
 					</fields>
 				</cardlink_checkout_iris>
-				-->
 
 			</groups>
 		</payment>

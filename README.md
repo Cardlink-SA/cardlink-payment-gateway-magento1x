@@ -17,6 +17,8 @@
   - Validate Alpha Bonus digest.
 - **1.1.1**
   - Fixed bug that inhibits sending new order notification email.
+- **1.1.2**
+  - Added support for IRIS payments.
 
 ## Description
 
@@ -41,6 +43,7 @@ Once you have completed the requested tests and any changes to your website, you
 7. In-store checkout option: the merchant can configure the payment process to take place inside a pop up with IFRAME to mask the redirection process from the customers.
 8. A text field for providing the absolute or relative (to Cardlink Payment Gateway location on server) URL of custom CSS stylesheet, to apply custom CSS styles in the payment page.
 9. Translation ready for Greek & English languages.
+10. Support IRIS payments.
 
 ## Installation
 

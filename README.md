@@ -10,15 +10,24 @@
 
 ## Changelog
 
-- **1.0.0**
-  - Initial release
+- **1.1.3**
+  - Minor fixes.
+  -	Removed unused files.
+  -	Updated README.
+- **1.1.2**
+  - Added support for IRIS payments.
+- **1.1.1**
+  - Fixed bug that inhibits sending new order notification email.
 - **1.1.0**
   - Bug fixes.
   - Validate Alpha Bonus digest.
-- **1.1.1**
-  - Fixed bug that inhibits sending new order notification email.
-- **1.1.2**
-  - Added support for IRIS payments.
+- **1.0.0**
+  - Initial release
+
+## Support tickets
+
+In case that you face any technical issue during the installation process, you can contact the Cardlink e-commerce team at ecommerce_support@cardlink.gr.
+
 
 ## Description
 
@@ -53,7 +62,11 @@ Depending on your hosting provider, you will probably have to be familiar with t
 
 ### Required Hosting Settings 
 
-For security reasons, Web browsers will not send target domain cookies when the referrer website is on another domain and data are POSTed unless the ``SameSite`` option of these cookies is set to the value ``None``. If you fail to properly configure the required hosting settings, customers returning from the payment gateway will be automatically logged out from their accounts. The following configuration instructions will manipulate all cookies set by your store to allow customer sessions to persist after returning from the payment gateway.
+For security reasons, Web browsers will not send target domain cookies when the referrer website is on another domain and data are POSTed unless the ``SameSite`` option of these cookies is set to the value ``None``. If you fail to properly configure the required hosting settings, customers returning from the payment gateway will be automatically logged out from their accounts. The following configuration instructions will manipulate cookies set by your store to allow customer sessions to persist after returning from the payment gateway.
+
+### Magento Web Settings
+
+Go to System > Configuration > General > Web. If there is a section name Session Cookie Management, set the Same-Site setting to ``None``. This should be sufficient. Clear your site cookies or open an Incognito window, place a test order using card payment and check whether the user session is retained after a successful payment. If not, proceed with the following web server configuration actions.
 
 #### Apache Web Server
 
@@ -94,6 +107,16 @@ Header always edit Set-Cookie ^(.*)$ $1;SameSite=None;Secure
 
 If you are unsure or unfamiliar with the actions described above, please ask a trained IT person or contact your hosting provider to do them for you.
 
-## Support tickets
+## Screenshots
 
-In case that you face any technical issue during the installation process, you can contact the Cardlink e-commerce team at ecommerce_support@cardlink.gr.
+1.	The Cardlink Payment Gateway settings screen used to configure the main Cardlink gateway (System > Configuration > Sales > Payment Methods).
+
+![image001](README-IMAGES/image001.png)
+
+2.	This is the front-end of Cardlink Payment Gateway plugin located in checkout page.
+
+![image002](README-IMAGES/image002.png)
+
+3.	To set up IRIS payments, you will need to have the Merchant ID, Shared Secret and DIAS Customer ID specifically issued for use with IRIS. Other settings are similar to the ones for Card Payments.
+
+![image003](README-IMAGES/image003.png)

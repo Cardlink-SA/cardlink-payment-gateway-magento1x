@@ -1,4 +1,4 @@
-<?php if (Mage::helper('cardlink_checkout')->doCheckoutInIframe()) : ?>
+<?php if (Mage::helper('cardlink_checkout')->doCheckoutInIframe()): ?>
 
     <!-- Modal -->
     <div id="cardlink_checkout--modal">
@@ -11,25 +11,34 @@
     <!-- Modal -->
 
     <script>
-        const cardlinkCheckoutModal = document.getElementById('cardlink_checkout--modal');
 
         if (typeof Review.prototype.nextStepLegacy === 'undefined') {
             Review.prototype.nextStepLegacy = Review.prototype.nextStep;
 
-            Review.prototype.nextStep = function(transport) {
-                if (transport.responseJSON.success == true) {
-                    openCardlinkCheckout(transport.responseJSON.redirect);
-                    return;
-                }
+            Review.prototype.nextStep = function (transport) {
+                try {
+                    const isChecked = document.querySelector('input[type="radio"][value="cardlink_checkout"]').checked;
+
+                    if (isChecked) {
+                        if (transport.responseJSON.success == true) {
+                            openCardlinkCheckout(transport.responseJSON.redirect);
+                            return;
+                        }
+                    }
+                } catch (ex) { }
                 Review.prototype.nextStepLegacy(transport);
             }
         }
 
         function openCardlinkCheckout(url) {
             document.getElementById('cardlink_checkout--modal-iframe').src = url;
+
+            const cardlinkCheckoutModal = document.getElementById('cardlink_checkout--modal');
             cardlinkCheckoutModal.style.display = "block";
+
             return false;
         }
+
     </script>
 
 <?php endif; ?>

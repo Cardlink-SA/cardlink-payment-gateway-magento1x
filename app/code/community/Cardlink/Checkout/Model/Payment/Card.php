@@ -55,7 +55,6 @@ class Cardlink_Checkout_Model_Payment_Card extends Mage_Payment_Model_Method_Abs
     public function validate()
     {
         parent::validate();
-        $info = $this->getInfoInstance();
 
         return $this;
     }
@@ -69,5 +68,10 @@ class Cardlink_Checkout_Model_Payment_Card extends Mage_Payment_Model_Method_Abs
     {
         // When customers click on the place order button they will be redirected on this URL that will handle all payment gateway transaction request functions.
         return Mage::getUrl('cardlink_checkout/payment/redirect', array('_secure' => true, '_query' => 'payment_method=card'));
+    }
+	
+    public function isAvailable($quote = null)
+    {
+        return true;
     }
 }

@@ -10,6 +10,8 @@
 
 ## Changelog
 
+- **1.1.4**
+  - Payment method activation fixes.
 - **1.1.3**
   - Minor fixes.
   -	Removed unused files.

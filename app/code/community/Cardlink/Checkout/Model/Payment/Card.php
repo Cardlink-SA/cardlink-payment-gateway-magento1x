@@ -69,9 +69,24 @@ class Cardlink_Checkout_Model_Payment_Card extends Mage_Payment_Model_Method_Abs
         // When customers click on the place order button they will be redirected on this URL that will handle all payment gateway transaction request functions.
         return Mage::getUrl('cardlink_checkout/payment/redirect', array('_secure' => true, '_query' => 'payment_method=card'));
     }
-	
+
+    private function isNullOrWhitespace($str)
+    {
+        return is_null($str) || trim($str) === '';
+    }
+
     public function isAvailable($quote = null)
     {
-        return true;
+        $isActive = $this->_code && Mage::getStoreConfigFlag('payment/' . $this->_code . '/active', $quote ? $quote->getStoreId() : null);
+
+        if ($isActive) {
+            $mid = Mage::getStoreConfig('payment/' . $this->_code . '/merchant_id', $quote ? $quote->getStoreId() : null);
+            $sharedSecret = Mage::getStoreConfig('payment/' . $this->_code . '/shared_secret', $quote ? $quote->getStoreId() : null);
+
+            if (!self::isNullOrWhitespace($mid) && !self::isNullOrWhitespace($sharedSecret)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -10,6 +10,8 @@
 
 ## Changelog
 
+- **1.1.5**
+  - Add Cardlink and Worldline as IRIS business partners.
 - **1.1.4**
   - Payment method activation fixes.
 - **1.1.3**
@@ -45,7 +47,7 @@ Once you have completed the requested tests and any changes to your website, you
 
 ## Features
 
-1. A dropdown option for instance between Worldline, Nexi και Cardlink.
+1. A dropdown option for instance between Worldline, Nexi and Cardlink.
 2. Option to enable test environment (sandbox). All transactions will be redirected to the endpoint that represents the production environment by default. The endpoint will be different depending on which acquirer has been chosen from instance dropdown option.
 3. Ability to define the maximum number of installments regardless of the total order amount.
 4. Ability to define the ranges of the total order amounts and the maximum number of installments for each range.
@@ -54,7 +56,8 @@ Once you have completed the requested tests and any changes to your website, you
 7. In-store checkout option: the merchant can configure the payment process to take place inside a pop up with IFRAME to mask the redirection process from the customers.
 8. A text field for providing the absolute or relative (to Cardlink Payment Gateway location on server) URL of custom CSS stylesheet, to apply custom CSS styles in the payment page.
 9. Translation ready for Greek & English languages.
-10. Support IRIS payments.
+10. Support for IRIS payments for Worldline, Nexi and Cardlink acquirers.
+11. The IFRAME feature is not supported for IRIS payments
 
 ## Installation
 

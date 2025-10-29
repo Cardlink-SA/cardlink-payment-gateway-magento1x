@@ -55,9 +55,8 @@ class Cardlink_Checkout_Model_Payment_Iris extends Mage_Payment_Model_Method_Abs
         if ($isActive) {
             $mid = Mage::getStoreConfig('payment/' . $this->_code . '/merchant_id', $quote ? $quote->getStoreId() : null);
             $sharedSecret = Mage::getStoreConfig('payment/' . $this->_code . '/shared_secret', $quote ? $quote->getStoreId() : null);
-            $sellerId = Mage::getStoreConfig('payment/' . $this->_code . '/dias_code', $quote ? $quote->getStoreId() : null);
 
-            if (!self::isNullOrWhitespace($mid) && !self::isNullOrWhitespace($sharedSecret) && !self::isNullOrWhitespace($sellerId)) {
+            if (!self::isNullOrWhitespace($mid) && !self::isNullOrWhitespace($sharedSecret)) {
                 return true;
             }
         }

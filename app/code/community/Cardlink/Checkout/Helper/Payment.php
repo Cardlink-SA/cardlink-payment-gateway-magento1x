@@ -163,7 +163,7 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
         $formData[Cardlink_Checkout_Model_ApiFields::Currency] = $order->getOrderCurrencyCode(); // Get order currency code
 
         $diasCode = $helper->getDiasCode();
-        $enableIrisPayments = $helper->isIrisEnabled() && $diasCode != '';
+        $enableIrisPayments = $helper->isIrisEnabled();
 
         if ($payment_method_code == 'cardlink_checkout_iris' && $enableIrisPayments) {
 
@@ -174,10 +174,13 @@ class Cardlink_Checkout_Helper_Payment extends Mage_Core_Helper_Abstract
             $formData[Cardlink_Checkout_Model_ApiFields::MerchantId] = $helper->getIrisMerchantId();
             $formData[Cardlink_Checkout_Model_ApiFields::TransactionType] = '1';
             $formData[Cardlink_Checkout_Model_ApiFields::PaymentMethod] = 'IRIS';
-            $formData[Cardlink_Checkout_Model_ApiFields::OrderDescription] = self::generateIrisRFCode($diasCode, $formData[Cardlink_Checkout_Model_ApiFields::OrderId], $formData[Cardlink_Checkout_Model_ApiFields::OrderAmount]);
+
+            if ($helper->getIrisBusinessPartner() == Cardlink_Checkout_Model_System_Config_Source_BusinessPartnersIris::BUSINESS_PARTNER_NEXI) {
+                $formData[Cardlink_Checkout_Model_ApiFields::OrderDescription] = self::generateIrisRFCode($diasCode, $formData[Cardlink_Checkout_Model_ApiFields::OrderId], $formData[Cardlink_Checkout_Model_ApiFields::OrderAmount]);
+            }
+
             // The optional URL of a CSS file to be included in the pages of the payment gateway for custom formatting.
             $cssUrl = trim($helper->getIrisCssUrl());
-
         } else {
 
             $postUrl = $this->getPaymentGatewayDataPostUrl($helper->getBusinessPartner(), $helper->getTransactionEnvironment());

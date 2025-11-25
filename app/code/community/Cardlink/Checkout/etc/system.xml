@@ -382,16 +382,6 @@
 							<validate>required-entry</validate>
 						</shared_secret>
 
-						<dias_code translate="label comment">
-							<label>Seller ID</label>
-							<comment>The merchant's code on the DIAS network.</comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>42</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</dias_code>
-
 						<payment_gateway_css_url translate="label comment">
 							<label>CSS URL</label>
 							<comment>Full URL of custom CSS stylesheet, to be used to display payment page styles.</comment>

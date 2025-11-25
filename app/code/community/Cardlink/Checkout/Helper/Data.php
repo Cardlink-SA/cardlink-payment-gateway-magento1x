@@ -26,7 +26,6 @@ class Cardlink_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
     const XML_PATH_CONFIG_LOG_DEBUG_INFO = 'payment/cardlink_checkout/log_debug_info';
 
     const XML_PATH_CONFIG_IRIS_ENABLED = 'payment/cardlink_checkout_iris/active';
-    const XML_PATH_CONFIG_IRIS_DIAS_CODE = 'payment/cardlink_checkout_iris/dias_code';
     const XML_PATH_CONFIG_IRIS_MERCHANT_ID = 'payment/cardlink_checkout_iris/merchant_id';
     const XML_PATH_CONFIG_IRIS_SHARED_SECRET = 'payment/cardlink_checkout_iris/shared_secret';
     const XML_PATH_CONFIG_IRIS_BUSINESS_PARTNER = 'payment/cardlink_checkout_iris/business_partner';
@@ -269,16 +268,6 @@ class Cardlink_Checkout_Helper_Data extends Mage_Core_Helper_Abstract
             $logMessage = $data;
         }
         Mage::log($logMessage, $level, 'cardlink.log', true);
-    }
-
-    /**
-     * Returns the configured DIAS code.
-     * 
-     * @return string
-     */
-    public function getDiasCode()
-    {
-        return trim(Mage::getStoreConfig(self::XML_PATH_CONFIG_IRIS_DIAS_CODE));
     }
 
     /**
